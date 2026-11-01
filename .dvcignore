@@ -1,0 +1,4 @@
+data/input/
+data/landing/
+airflow-logs/
+logs/

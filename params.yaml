@@ -1,0 +1,31 @@
+seed: 42
+
+data:
+  input_dir: store-sales-time-series-forecasting
+  landing_dir: data/landing
+  processed_dir: data/processed
+  models_dir: data/models
+  forecasts_dir: data/forecasts
+  reports_dir: data/reports
+
+forecast:
+  horizon_days: 7
+  quantiles: [0.10, 0.50, 0.90]
+  validation_days: 28
+  validation_cutoffs: ["2017-06-30", "2017-07-07", "2017-07-14", "2017-07-21"]
+
+features:
+  lags: [1, 7, 14, 28]
+  rolling_windows: [7, 28]
+
+model:
+  max_training_rows: 500000
+  max_iter: 120
+  learning_rate: 0.08
+  max_leaf_nodes: 31
+  min_samples_leaf: 30
+  l2_regularization: 0.5
+
+selection:
+  min_business_improvement: 0.05
+  max_wape_regression: 0.02

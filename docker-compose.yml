@@ -1,0 +1,75 @@
+name: lab1-inventory
+
+x-airflow-common: &airflow-common
+  build: .
+  environment: &airflow-common-env
+    AIRFLOW__CORE__EXECUTOR: LocalExecutor
+    AIRFLOW__DATABASE__SQL_ALCHEMY_CONN: postgresql+psycopg2://airflow:airflow@postgres/airflow
+    AIRFLOW__CORE__LOAD_EXAMPLES: "false"
+    AIRFLOW__CORE__DAGS_ARE_PAUSED_AT_CREATION: "false"
+    AIRFLOW__API__AUTH_BACKENDS: airflow.api.auth.backend.basic_auth,airflow.api.auth.backend.session
+    LAB1_INPUT_DIR: /opt/project/store-sales-time-series-forecasting
+    LAB1_LANDING_DIR: /opt/project/data/landing
+    LAB1_PROCESSED_DIR: /opt/project/data/processed
+    LAB1_FORECAST_DIR: /opt/project/data/forecasts
+    LAB1_REPORT_DIR: /opt/project/data/reports
+    LAB1_MODEL_PATH: /opt/project/data/models/global_model.joblib
+    LAB1_PARAMS_PATH: /opt/project/params.yaml
+    LAB1_BUSINESS_PATH: /opt/project/configs/business.yaml
+  volumes:
+    - ./dags:/opt/airflow/dags
+    - ./src:/opt/project/src
+    - ./configs:/opt/project/configs
+    - ./params.yaml:/opt/project/params.yaml:ro
+    - ./data:/opt/project/data
+    - ./store-sales-time-series-forecasting:/opt/project/store-sales-time-series-forecasting:ro
+    - ./airflow-logs:/opt/airflow/logs
+  user: "${AIRFLOW_UID:-50000}:0"
+  depends_on:
+    postgres:
+      condition: service_healthy
+
+services:
+  postgres:
+    image: postgres:16
+    environment:
+      POSTGRES_USER: airflow
+      POSTGRES_PASSWORD: airflow
+      POSTGRES_DB: airflow
+    healthcheck:
+      test: ["CMD", "pg_isready", "-U", "airflow"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    volumes:
+      - postgres-db-volume:/var/lib/postgresql/data
+
+  airflow-init:
+    <<: *airflow-common
+    entrypoint: /bin/bash
+    command:
+      - -c
+      - |
+        airflow db migrate
+        airflow users create --username admin --password admin --firstname Lab --lastname Admin --role Admin --email admin@example.com || true
+
+  airflow-apiserver:
+    <<: *airflow-common
+    command: api-server
+    ports:
+      - "8080:8080"
+
+  airflow-scheduler:
+    <<: *airflow-common
+    command: scheduler
+
+  airflow-dag-processor:
+    <<: *airflow-common
+    command: dag-processor
+
+  airflow-triggerer:
+    <<: *airflow-common
+    command: triggerer
+
+volumes:
+  postgres-db-volume:

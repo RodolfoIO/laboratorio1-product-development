@@ -1,0 +1,21 @@
+schema: '2.0'
+stages:
+  validate:
+    cmd: PYTHONPATH=src python -m inventory_forecasting.data.validate 
+      --input-dir store-sales-time-series-forecasting
+    deps:
+    - path: configs/sources.yaml
+      hash: md5
+      md5: 0041db1e1226d381e180edb684122f1b
+      size: 708
+      isexec: true
+    - path: src/inventory_forecasting/data/contracts.py
+      hash: md5
+      md5: e152d4f63e50b6e16153582a5149b9c9
+      size: 5383
+      isexec: true
+    - path: src/inventory_forecasting/data/landing.py
+      hash: md5
+      md5: 44f5fa6f2d62d6ca046a3e07df0aa94f
+      size: 3595
+      isexec: true

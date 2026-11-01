@@ -1,0 +1,24 @@
+sources:
+  train.csv:
+    required_columns: [id, date, store_nbr, family, sales, onpromotion]
+    date_column: date
+    availability_lag_days: 1
+  stores.csv:
+    required_columns: [store_nbr, city, state, type, cluster]
+    date_column: null
+    availability_lag_days: 0
+  holidays_events.csv:
+    required_columns: [date, type, locale, locale_name, description, transferred]
+    date_column: date
+    availability_lag_days: 7
+  oil.csv:
+    required_columns: [date, dcoilwtico]
+    date_column: date
+    availability_lag_days: 1
+  transactions.csv:
+    required_columns: [date, store_nbr, transactions]
+    date_column: date
+    availability_lag_days: 1
+
+excluded_files: [test.csv, sample_submission.csv]
+

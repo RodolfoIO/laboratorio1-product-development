@@ -1,0 +1,9 @@
+forecast:
+  horizon_days: 7
+  quantiles: [0.10, 0.50, 0.90]
+
+business:
+  stockout_cost: 1.0
+  waste_cost: 0.25
+  minimum_order: 0.0
+

@@ -1,0 +1,37 @@
+stages:
+  validate:
+    cmd: PYTHONPATH=src python -m inventory_forecasting.data.validate --input-dir store-sales-time-series-forecasting
+    deps:
+      - src/inventory_forecasting/data/contracts.py
+      - src/inventory_forecasting/data/landing.py
+      - configs/sources.yaml
+
+  prepare:
+    cmd: PYTHONPATH=src python -m inventory_forecasting.data.features --input-dir store-sales-time-series-forecasting --cutoff 2017-07-31 --output data/processed/training_features.parquet
+    deps:
+      - store-sales-time-series-forecasting/train.csv
+      - store-sales-time-series-forecasting/stores.csv
+      - store-sales-time-series-forecasting/holidays_events.csv
+      - store-sales-time-series-forecasting/oil.csv
+      - store-sales-time-series-forecasting/transactions.csv
+      - src/inventory_forecasting/data/features.py
+      - params.yaml
+    outs:
+      - data/processed/training_features.parquet
+
+  train:
+    cmd: PYTHONPATH=src python -m inventory_forecasting.models.train --input-dir store-sales-time-series-forecasting --model-dir data/models
+    deps:
+      - store-sales-time-series-forecasting/train.csv
+      - store-sales-time-series-forecasting/stores.csv
+      - store-sales-time-series-forecasting/holidays_events.csv
+      - store-sales-time-series-forecasting/oil.csv
+      - store-sales-time-series-forecasting/transactions.csv
+      - src/inventory_forecasting/models/train.py
+      - src/inventory_forecasting/models/global_model.py
+      - params.yaml
+      - configs/business.yaml
+    outs:
+      - data/models/global_model.joblib
+      - data/models/metrics.json
+
