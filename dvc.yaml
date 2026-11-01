@@ -1,6 +1,6 @@
 stages:
   validate:
-    cmd: PYTHONPATH=src python -m inventory_forecasting.data.validate --input-dir store-sales-time-series-forecasting
+    cmd: PYTHONPATH=src python -m inventory_forecasting.data.validate --input-dir store-sales-time-series-forecasting --landing-dir data/landing --stage
     deps:
       - store-sales-time-series-forecasting/train.csv
       - store-sales-time-series-forecasting/stores.csv

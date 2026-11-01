@@ -36,6 +36,8 @@ def recursive_forecast(
     history = inputs["train"].copy()
     history["date"] = pd.to_datetime(history["date"])
     history = history[history["date"] <= cutoff_ts][["date", "store_nbr", "family", "sales"]].copy()
+    max_lookback = max(max(lags), max(rolling_windows)) + 1
+    history = history[history["date"] >= cutoff_ts - pd.Timedelta(max_lookback, unit="D")].copy()
     future_dates = pd.date_range(cutoff_ts + pd.Timedelta(1, unit="D"), periods=horizon_days, freq="D")
     outputs: list[pd.DataFrame] = []
     for target_date in future_dates:
