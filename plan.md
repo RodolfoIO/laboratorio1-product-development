@@ -8,7 +8,7 @@ Este documento refleja el estado del repositorio respecto al plan aprobado. Esta
 
 ## Fase 1 — Estructura y calidad
 
-**Hecho.** Existe estructura para `src/`, `tests/`, `dags/`, `configs/`, `scripts/`, Docker, CI y documentación. Están creados `README.md`, `DECISIONES.md`, `CLAUDE.md`, `AGENTS.md`, `.gitignore`, `pyproject.toml` y la configuración de pytest. Las pruebas locales pasan: **8 passed**.
+**Hecho.** Existe estructura para `src/`, `tests/`, `dags/`, `configs/`, `scripts/`, Docker, CI y documentación. Están creados `README.md`, `DECISIONES.md`, `CLAUDE.md`, `AGENTS.md`, `.gitignore`, `pyproject.toml` y la configuración de pytest. Las pruebas locales pasan: **9 passed**.
 
 ## Fase 2 — Carga, bandeja y DVC
 
@@ -36,11 +36,22 @@ Este documento refleja el estado del repositorio respecto al plan aprobado. Esta
 
 ## Fase 8 — CI, documentación y entrega
 
-**Parcial.** GitHub Actions, README, decisiones, artefactos DVC, `dvc status` limpio y `dvc push` exitoso están listos; el tag local `entrega-lab1` apunta al commit final. Falta publicar los commits/tag en GitHub, verificar el clon limpio y conservar evidencia de Airflow.
+**Parcial.** GitHub Actions, README, decisiones, artefactos DVC, `dvc status` limpio y `dvc push` exitoso están listos; el tag local `entrega-lab1` apunta al commit final `7150c3f`. Falta publicar los cuatro commits y el tag en GitHub, verificar el clon limpio y conservar evidencia de Airflow.
+
+## Verificación local final
+
+- `pytest`: **9 passed**.
+- `make smoke`: aprobado.
+- `docker compose config`: aprobado.
+- `dvc repro`: completado con las cinco etapas.
+- `dvc status --no-updates --json`: `{}`.
+- `dvc push`: **12 archivos publicados**.
+- Seguimiento histórico: **12,474 pronósticos observados**, cero pendientes.
+- Comparación de modelos: se seleccionó `baseline` porque el modelo ML no cumplió el criterio de pérdida de negocio.
 
 ## Orden recomendado para finalizar
 
 1. Validar `dvc pull` desde un clon limpio.
 2. Habilitar Docker y ejecutar los DAGs, backfill y reprocesamiento.
 3. Guardar capturas o logs de Airflow junto con la evidencia ya versionada.
-4. Publicar los tres commits y el tag `entrega-lab1` en GitHub y confirmar la protección de `main`.
+4. Publicar los cuatro commits y el tag `entrega-lab1` en GitHub y confirmar la protección de `main`.
