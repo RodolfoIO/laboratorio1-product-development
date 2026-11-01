@@ -2,9 +2,18 @@ stages:
   validate:
     cmd: PYTHONPATH=src python -m inventory_forecasting.data.validate --input-dir store-sales-time-series-forecasting
     deps:
+      - store-sales-time-series-forecasting/train.csv
+      - store-sales-time-series-forecasting/stores.csv
+      - store-sales-time-series-forecasting/holidays_events.csv
+      - store-sales-time-series-forecasting/oil.csv
+      - store-sales-time-series-forecasting/transactions.csv
       - src/inventory_forecasting/data/contracts.py
       - src/inventory_forecasting/data/landing.py
       - configs/sources.yaml
+    outs:
+      - data/landing/manifest.parquet
+      - data/landing/manifest_history.parquet
+      - data/landing/metadata.json
 
   prepare:
     cmd: PYTHONPATH=src python -m inventory_forecasting.data.features --input-dir store-sales-time-series-forecasting --cutoff 2017-07-31 --output data/processed/training_features.parquet
@@ -18,6 +27,7 @@ stages:
       - params.yaml
     outs:
       - data/processed/training_features.parquet
+      - data/processed/training_features.json
 
   train:
     cmd: PYTHONPATH=src python -m inventory_forecasting.models.train --input-dir store-sales-time-series-forecasting --model-dir data/models
@@ -36,9 +46,11 @@ stages:
     outs:
       - data/models/global_model.joblib
       - data/models/metrics.json
+      - data/models/model_comparison.csv
+      - data/models/current_model.json
 
   forecast:
-    cmd: PYTHONPATH=src python -m inventory_forecasting.product.forecast --input-dir store-sales-time-series-forecasting --cutoff 2017-08-15 --output-dir data/forecasts --model data/models/global_model.joblib
+    cmd: PYTHONPATH=src python -m inventory_forecasting.product.forecast --input-dir store-sales-time-series-forecasting --cutoff 2017-07-31 --output-dir data/forecasts --model data/models/global_model.joblib
     deps:
       - store-sales-time-series-forecasting/train.csv
       - store-sales-time-series-forecasting/stores.csv
@@ -51,17 +63,18 @@ stages:
       - configs/business.yaml
       - params.yaml
     outs:
-      - data/forecasts/forecast_2017-08-15.parquet
-      - data/forecasts/order_2017-08-15.parquet
+      - data/forecasts/forecast_2017-07-31.parquet
+      - data/forecasts/order_2017-07-31.parquet
 
   monitor:
     cmd: PYTHONPATH=src python -m inventory_forecasting.product.monitor --input-dir store-sales-time-series-forecasting --forecast-dir data/forecasts --reports-dir data/reports
     deps:
       - store-sales-time-series-forecasting/train.csv
-      - data/forecasts/forecast_2017-08-15.parquet
+      - data/forecasts/forecast_2017-07-31.parquet
       - src/inventory_forecasting/product/monitor.py
       - src/inventory_forecasting/models/metrics.py
       - configs/business.yaml
     outs:
       - data/reports/performance.json
       - data/reports/performance_detail.parquet
+      - data/reports/cost_sensitivity.json

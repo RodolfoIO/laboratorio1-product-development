@@ -29,4 +29,5 @@ def test_train_publish_monitor_smoke(source_dir, tmp_path, monkeypatch):
     report = monitor_forecasts(source_dir, tmp_path / "forecasts", tmp_path / "reports", business)
     assert report["published_rows"] == 28
     assert (tmp_path / "reports" / "performance.json").exists()
-
+    assert (tmp_path / "reports" / "cost_sensitivity.json").exists()
+    assert report["cost_sensitivity"][1]["changed_rows_vs_configured"] > 0

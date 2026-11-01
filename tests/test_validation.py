@@ -25,3 +25,27 @@ def test_stage_sources_creates_hash_manifest_without_modifying_input(source_dir,
     manifest = build_manifest(source_dir)
     assert set(manifest["source"]) == {"train.csv", "stores.csv", "holidays_events.csv", "oil.csv", "transactions.csv"}
 
+
+def test_stage_sources_is_idempotent_and_records_corrections(source_dir, tmp_path):
+    landing = tmp_path / "landing"
+    first = stage_sources(source_dir, landing)
+    first_manifest = pd.read_parquet(landing / "manifest.parquet")
+    first_history = pd.read_parquet(landing / "manifest_history.parquet")
+    second = stage_sources(source_dir, landing)
+    second_manifest = pd.read_parquet(landing / "manifest.parquet")
+    second_history = pd.read_parquet(landing / "manifest_history.parquet")
+
+    assert first["hashes"] == second["hashes"]
+    pd.testing.assert_frame_equal(first_manifest, second_manifest)
+    pd.testing.assert_frame_equal(first_history, second_history)
+
+    train_path = source_dir / "train.csv"
+    train = pd.read_csv(train_path)
+    train.loc[0, "sales"] += 5
+    train.to_csv(train_path, index=False)
+    stage_sources(source_dir, landing)
+    corrected_history = pd.read_parquet(landing / "manifest_history.parquet")
+    target_date = str(pd.Timestamp(train.loc[0, "date"]).date())
+    revisions = corrected_history.query("source == 'train.csv' and observed_date == @target_date")
+    assert len(revisions) == 2
+    assert len(corrected_history) > len(second_history)

@@ -12,19 +12,19 @@ Este documento refleja el estado del repositorio respecto al plan aprobado. Esta
 
 ## Fase 2 — Carga, bandeja y DVC
 
-**Parcial.** Hay archivos `.dvc`, `dvc.yaml`, `dvc.lock` y datos procesados. Falta instalar DVC, configurar el remoto de Google Drive, ejecutar `dvc push` y comprobar `dvc pull` desde un clon limpio. El remoto todavía no está configurado en `.dvc/config`.
+**Parcial.** La definición del pipeline y el remoto S3-compatible están preparados, y las salidas de bandeja, datos procesados, modelos, pronósticos y reportes están declaradas. Falta ejecutar `dvc repro`, confirmar todos los hashes en `dvc.lock`, ejecutar `dvc push` y comprobar `dvc pull` desde un clon limpio.
 
 ## Fase 3 — Validación y preparación temporal
 
-**Hecho a nivel de código; validación operativa pendiente.** Están implementadas validaciones de esquema, duplicados, fechas, claves, valores inválidos, features temporales y ejecución determinista. Falta ejecutar y conservar evidencia de correcciones, reprocesamiento y hashes idénticos en una segunda ejecución.
+**Parcial.** Están implementadas validaciones de esquema, duplicados, fechas, claves, valores inválidos, entregas por fecha, historial de hashes y features temporales. Falta ejecutar y conservar evidencia de correcciones, reprocesamiento y hashes idénticos en una segunda ejecución.
 
 ## Fase 4 — Baseline, ML y selección
 
-**Parcial.** Existen baseline, modelo global, métricas y artefactos de entrenamiento. Falta generar la tabla comparativa reproducible entre modelos, documentar la selección y versionar el resultado mediante DVC.
+**Parcial.** Existen baseline, modelo global, criterio de selección y generación de métricas. La tabla comparativa reproducible y la decisión del modelo ya están implementadas; falta ejecutar el entrenamiento final y versionar los artefactos mediante DVC.
 
 ## Fase 5 — Pronóstico y pedido
 
-**Hecho a nivel de código.** Se generan p10, p50 y p90, pedido sugerido por costos, metadatos y salidas deterministas en `data/forecasts/`. Falta demostrar formalmente que cambiar `stockout_cost` y `waste_cost` modifica el pedido.
+**Hecho a nivel de código.** Se generan p10, p50 y p90, pedido sugerido por costos, metadatos, sensibilidad a costos y salidas deterministas en `data/forecasts/`. Falta conservar la evidencia de ejecución final.
 
 ## Fase 6 — Airflow
 
@@ -32,7 +32,7 @@ Este documento refleja el estado del repositorio respecto al plan aprobado. Esta
 
 ## Fase 7 — Seguimiento
 
-**Parcial.** Existe el módulo de monitorización y el reporte en `data/reports/`. Falta validar un periodo completo con ventas reales, incluyendo datos pendientes, tardíos y corregidos, y conservar evidencia de actualización.
+**Parcial.** Existe el módulo de monitorización, el reporte de desempeño y la sensibilidad a costos. Falta validar un periodo completo con ventas reales, incluyendo datos pendientes, tardíos y corregidos, y conservar evidencia de actualización.
 
 ## Fase 8 — CI, documentación y entrega
 
@@ -40,7 +40,7 @@ Este documento refleja el estado del repositorio respecto al plan aprobado. Esta
 
 ## Orden recomendado para finalizar
 
-1. Instalar `dvc[gdrive]` y configurar el remoto de Google Drive.
+1. Ejecutar `dvc repro` y confirmar que `dvc.lock` incluya todas las etapas.
 2. Ejecutar `dvc push` y validar recuperación con `dvc pull`.
 3. Habilitar Docker y ejecutar los DAGs, backfill y reprocesamiento.
 4. Generar y guardar las evidencias de modelo, costos y monitorización.

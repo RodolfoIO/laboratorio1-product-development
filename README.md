@@ -43,6 +43,7 @@ python -m inventory_forecasting.data.validate \
 ```
 
 La bandeja no modifica la carpeta original. `data/landing/manifest.parquet` registra una entrega lógica por fuente y fecha, fecha de disponibilidad, ruta y hash SHA-256.
+También se materializa una entrega CSV por fuente y fecha bajo `data/landing/deliveries/`; `manifest_history.parquet` conserva hashes de correcciones posteriores.
 
 ## Instalación y pruebas
 
@@ -60,15 +61,17 @@ También están disponibles:
 
 ```bash
 make validate
+make stage
 make prepare CUTOFF=2017-07-31
 make train
 make forecast CUTOFF=2017-07-31
 make monitor
+make evidence CUTOFF=2017-07-31
 ```
 
 ## DVC
 
-Los datos, modelos, pronósticos y reportes no deben confirmarse directamente en Git. Configura un remoto accesible para el equipo docente, por ejemplo un bucket S3-compatible:
+Los datos, modelos, pronósticos y reportes no deben confirmarse directamente en Git. El repositorio usa un remoto S3-compatible; las credenciales se mantienen fuera de Git:
 
 ```bash
 dvc remote add -d storage s3://BUCKET/lab1
@@ -77,6 +80,8 @@ export AWS_ACCESS_KEY_ID=...
 export AWS_SECRET_ACCESS_KEY=...
 dvc push
 ```
+
+La etapa `train` conserva `metrics.json`, `model_comparison.csv` y `current_model.json`. La etapa `monitor` conserva el reporte de desempeño y `cost_sensitivity.json`.
 
 Las credenciales se inyectan por variables de entorno o secretos; nunca se escriben en el repositorio.
 
@@ -106,6 +111,8 @@ PYTHONPATH=src python -m inventory_forecasting.product.forecast \
 sha256sum data/forecasts/forecast_2017-07-31.parquet
 ```
 
+El hash obtenido debe coincidir con el hash registrado en la evidencia de entrega. Después de comprobarlo, regresar a la rama principal con `git switch main`.
+
 ## Entrenamiento y publicación
 
 El entrenamiento realiza una validación temporal sobre los últimos 28 días disponibles:
@@ -134,6 +141,7 @@ stockout_cost / (stockout_cost + waste_cost)
 ```
 
 Por ello, cambiar `configs/business.yaml` modifica la recomendación sin modificar el código.
+`data/reports/cost_sensitivity.json` conserva una comparación reproducible entre costos configurados, costos con quiebre dominante y costos con merma dominante.
 
 ## Airflow 3 con Docker Compose
 
@@ -155,6 +163,15 @@ Los DAGs son:
 - `lab1_monitor_performance`: compara pronósticos con ventas disponibles.
 
 Los DAGs tienen `catchup=True`, aceptan backfill y escriben resultados deterministas por fecha de corte. Las tareas esperan que la entrada esté montada en `/opt/project/store-sales-time-series-forecasting`.
+
+Para un backfill local, después de levantar Airflow se puede ejecutar:
+
+```bash
+docker compose exec airflow-scheduler airflow dags backfill lab1_forecast_and_order \
+  --start-date 2017-07-24 --end-date 2017-07-31
+```
+
+Una corrección se prueba modificando una copia de la fuente en la bandeja, ejecutando nuevamente `lab1_ingest_validate` y reprocesando el corte afectado. La carpeta original de Kaggle permanece de solo lectura.
 
 ## Estructura
 
@@ -180,3 +197,5 @@ GitHub Actions ejecuta pytest en cada Pull Request y en cada push a `main`. El f
 5. Proteger `main` contra pushes directos.
 6. Confirmar que `dvc status` esté limpio y que `dvc push` haya terminado.
 7. Crear el tag `entrega-lab1` sobre el último commit evaluable.
+
+La evidencia mínima que debe conservarse en la entrega es: ejecución exitosa de los DAGs en Airflow, `data/models/model_comparison.csv`, `data/reports/performance.json`, `data/reports/cost_sensitivity.json`, el resultado de `dvc status` limpio y el hash de reproducción de un pronóstico publicado.

@@ -89,7 +89,27 @@ def train_and_evaluate(
         "validation_rows": len(actual),
     }
     (model_dir / "metrics.json").write_text(json.dumps(result, indent=2), encoding="utf-8")
-    (model_dir / "current_model.json").write_text(json.dumps({"model": selected, "model_path": str(model_path)}, indent=2), encoding="utf-8")
+    comparison = pd.DataFrame(
+        [
+            {"model": "baseline", **baseline_metrics},
+            {"model": "global_ml", **ml_metrics},
+        ]
+    )
+    comparison.to_csv(model_dir / "model_comparison.csv", index=False)
+    (model_dir / "current_model.json").write_text(
+        json.dumps(
+            {
+                "model": selected,
+                "model_path": str(model_path),
+                "selection": {
+                    "min_business_improvement": float(params["selection"]["min_business_improvement"]),
+                    "max_wape_regression": float(params["selection"]["max_wape_regression"]),
+                },
+            },
+            indent=2,
+        ),
+        encoding="utf-8",
+    )
     return result
 
 
