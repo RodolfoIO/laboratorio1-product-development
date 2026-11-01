@@ -2,6 +2,17 @@
 
 Producto reproducible de pronóstico semanal para Corporación Favorita. A partir de ventas diarias, promociones, transacciones, petróleo, feriados y tiendas, publica un pronóstico de 7 días por tienda y familia, un pedido sugerido y el seguimiento de resultados.
 
+## Estado de entrega
+
+Entrega final publicada en [GitHub](https://github.com/RodolfoIO/laboratorio1-product-development).
+
+- Rama principal: `main` sincronizada con el commit `ed513c7`.
+- Tag evaluable: `entrega-lab1`.
+- Pruebas: `9 passed`.
+- DVC: `dvc status` limpio y artefactos publicados en el remoto.
+- Airflow: cuatro DAG cargados sin errores de importación; ejecución controlada del monitor exitosa.
+- Evidencia adicional: [docs/evidence/airflow_validation.md](docs/evidence/airflow_validation.md).
+
 ## Estado del producto
 
 - Frecuencia de publicación: semanal.
@@ -84,6 +95,12 @@ dvc push
 La etapa `train` conserva `metrics.json`, `model_comparison.csv` y `current_model.json`. La etapa `monitor` conserva el reporte de desempeño y `cost_sensitivity.json`.
 
 Las credenciales se inyectan por variables de entorno o secretos; nunca se escriben en el repositorio.
+
+En un clon limpio, configura las credenciales del remoto antes de ejecutar `dvc pull`; por ejemplo, si usas un perfil AWS local:
+
+```bash
+AWS_PROFILE=laboratorio1 dvc pull
+```
 
 Si el entorno restringe la escritura en `/var/tmp`, usa una caché local temporal antes de ejecutar DVC:
 
@@ -200,3 +217,5 @@ GitHub Actions ejecuta pytest en cada Pull Request y en cada push a `main`. El f
 7. Crear el tag `entrega-lab1` sobre el último commit evaluable.
 
 La evidencia mínima que debe conservarse en la entrega es: ejecución exitosa de los DAGs en Airflow, `data/models/model_comparison.csv`, `data/reports/performance.json`, `data/reports/cost_sensitivity.json`, el resultado de `dvc status` limpio y el hash de reproducción de un pronóstico publicado.
+
+La evidencia ejecutada para esta entrega confirma 12,474 pronósticos observados, cero pendientes y sensibilidad reproducible para escenarios configurado, `stockout_heavy` y `waste_heavy`.
