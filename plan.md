@@ -12,19 +12,19 @@ Este documento refleja el estado del repositorio respecto al plan aprobado. Esta
 
 ## Fase 2 — Carga, bandeja y DVC
 
-**Parcial.** La definición del pipeline y el remoto S3-compatible están preparados, y las salidas de bandeja, datos procesados, modelos, pronósticos y reportes están declaradas. Falta ejecutar `dvc repro`, confirmar todos los hashes en `dvc.lock`, ejecutar `dvc push` y comprobar `dvc pull` desde un clon limpio.
+**Hecho localmente.** La definición del pipeline incluye las cinco etapas, `dvc.lock` contiene los hashes de bandeja, datos procesados, modelo, pronóstico y reportes, `dvc status` está limpio y `dvc push` publicó 12 archivos en el remoto S3-compatible. Falta comprobar recuperación desde un clon limpio.
 
 ## Fase 3 — Validación y preparación temporal
 
-**Parcial.** Están implementadas validaciones de esquema, duplicados, fechas, claves, valores inválidos, entregas por fecha, historial de hashes y features temporales. Falta ejecutar y conservar evidencia de correcciones, reprocesamiento y hashes idénticos en una segunda ejecución.
+**Hecho a nivel local.** Están implementadas validaciones de esquema, duplicados, fechas, claves, valores inválidos, entregas por fecha, historial de hashes y features temporales. Las pruebas cubren una corrección y la idempotencia de la bandeja; falta ejecutar la misma demostración dentro de Airflow.
 
 ## Fase 4 — Baseline, ML y selección
 
-**Parcial.** Existen baseline, modelo global, criterio de selección y generación de métricas. La tabla comparativa reproducible y la decisión del modelo ya están implementadas; falta ejecutar el entrenamiento final y versionar los artefactos mediante DVC.
+**Hecho localmente.** El entrenamiento final generó métricas, tabla comparativa, decisión de selección y artefacto de modelo. El baseline fue seleccionado porque el modelo ML no mejoró la pérdida de negocio; los resultados están versionados mediante DVC.
 
 ## Fase 5 — Pronóstico y pedido
 
-**Hecho a nivel de código.** Se generan p10, p50 y p90, pedido sugerido por costos, metadatos, sensibilidad a costos y salidas deterministas en `data/forecasts/`. Falta conservar la evidencia de ejecución final.
+**Hecho localmente.** Se generaron p10, p50 y p90, pedido sugerido por costos, metadatos, sensibilidad a costos y salidas deterministas en `data/forecasts/`.
 
 ## Fase 6 — Airflow
 
@@ -32,16 +32,15 @@ Este documento refleja el estado del repositorio respecto al plan aprobado. Esta
 
 ## Fase 7 — Seguimiento
 
-**Parcial.** Existe el módulo de monitorización, el reporte de desempeño y la sensibilidad a costos. Falta validar un periodo completo con ventas reales, incluyendo datos pendientes, tardíos y corregidos, y conservar evidencia de actualización.
+**Hecho para datos históricos.** El reporte contiene 12,474 pronósticos observados, métricas por horizonte y sensibilidad a costos. Falta ejecutar el flujo equivalente en Airflow con datos pendientes, tardíos y corregidos.
 
 ## Fase 8 — CI, documentación y entrega
 
-**Parcial.** GitHub Actions ejecuta pytest; README y decisiones están documentados; el tag `entrega-lab1` existe. Faltan la prueba desde clon limpio, evidencias finales, `dvc status` limpio, `dvc push` exitoso y la verificación integral Docker + Airflow + DVC.
+**Parcial.** GitHub Actions, README, decisiones, artefactos DVC, `dvc status` limpio y `dvc push` exitoso están listos; el tag local `entrega-lab1` apunta al commit final. Falta publicar los commits/tag en GitHub, verificar el clon limpio y conservar evidencia de Airflow.
 
 ## Orden recomendado para finalizar
 
-1. Ejecutar `dvc repro` y confirmar que `dvc.lock` incluya todas las etapas.
-2. Ejecutar `dvc push` y validar recuperación con `dvc pull`.
-3. Habilitar Docker y ejecutar los DAGs, backfill y reprocesamiento.
-4. Generar y guardar las evidencias de modelo, costos y monitorización.
-5. Repetir la entrega desde un clon limpio y actualizar el tag final si corresponde.
+1. Validar `dvc pull` desde un clon limpio.
+2. Habilitar Docker y ejecutar los DAGs, backfill y reprocesamiento.
+3. Guardar capturas o logs de Airflow junto con la evidencia ya versionada.
+4. Publicar los tres commits y el tag `entrega-lab1` en GitHub y confirmar la protección de `main`.
