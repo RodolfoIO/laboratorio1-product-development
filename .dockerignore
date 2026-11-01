@@ -1,0 +1,11 @@
+.venv/
+.git/
+.dvc/cache/
+.dvc/tmp/
+data/
+store-sales-time-series-forecasting/
+airflow-logs/
+logs/
+__pycache__/
+*.py[cod]
+.pytest_cache/
