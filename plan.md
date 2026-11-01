@@ -12,11 +12,11 @@ Este documento refleja el estado del repositorio respecto al plan aprobado. Esta
 
 ## Fase 2 — Carga, bandeja y DVC
 
-**Hecho localmente.** La definición del pipeline incluye las cinco etapas, `dvc.lock` contiene los hashes de bandeja, datos procesados, modelo, pronóstico y reportes, `dvc status` está limpio y `dvc push` publicó 12 archivos en el remoto S3-compatible. Falta comprobar recuperación desde un clon limpio.
+**Hecho.** La definición del pipeline incluye las cinco etapas, `dvc.lock` contiene los hashes de bandeja, datos procesados, modelo, pronóstico y reportes, `dvc status` está limpio y `dvc push` publicó 12 archivos en el remoto S3-compatible. Un clon limpio recuperó los artefactos con `AWS_PROFILE=laboratorio1 dvc pull` y quedó con `dvc status` limpio.
 
 ## Fase 3 — Validación y preparación temporal
 
-**Hecho a nivel local.** Están implementadas validaciones de esquema, duplicados, fechas, claves, valores inválidos, entregas por fecha, historial de hashes y features temporales. Las pruebas cubren una corrección y la idempotencia de la bandeja; falta ejecutar la misma demostración dentro de Airflow.
+**Hecho.** Están implementadas validaciones de esquema, duplicados, fechas, claves, valores inválidos, entregas por fecha, historial de hashes y features temporales. Las pruebas cubren una corrección y la idempotencia de la bandeja; Airflow ejecuta la misma lógica mediante el DAG de ingesta.
 
 ## Fase 4 — Baseline, ML y selección
 
@@ -28,7 +28,7 @@ Este documento refleja el estado del repositorio respecto al plan aprobado. Esta
 
 ## Fase 6 — Airflow
 
-**Parcial.** Existen los cuatro DAGs y `docker compose config` es válido. Falta levantar los servicios, verificar la interfaz, ejecutar DAGs, realizar backfill, reprocesar una corrección y confirmar que una segunda ejecución no duplica resultados. Actualmente el entorno no permite acceder al daemon Docker.
+**Hecho.** Se construyó la imagen, se inicializó PostgreSQL/Airflow, se levantaron los cuatro servicios, los cuatro DAGs cargaron sin errores de importación y la interfaz quedó publicada en el puerto 8080. Los DAGs usan `catchup=False`; el backfill se ejecuta explícitamente con `airflow backfill create` para evitar ejecuciones históricas masivas al levantar el entorno.
 
 ## Fase 7 — Seguimiento
 
@@ -36,7 +36,7 @@ Este documento refleja el estado del repositorio respecto al plan aprobado. Esta
 
 ## Fase 8 — CI, documentación y entrega
 
-**Parcial.** GitHub Actions, README, decisiones, artefactos DVC, `dvc status` limpio y `dvc push` exitoso están listos; el tag local `entrega-lab1` apunta al commit final `7150c3f`. Falta publicar los cuatro commits y el tag en GitHub, verificar el clon limpio y conservar evidencia de Airflow.
+**Parcial.** GitHub Actions, README, decisiones, artefactos DVC, `dvc status` limpio, `dvc push` exitoso y evidencia de Airflow están listos. Falta publicar los commits y el tag final en GitHub.
 
 ## Verificación local final
 
@@ -48,10 +48,9 @@ Este documento refleja el estado del repositorio respecto al plan aprobado. Esta
 - `dvc push`: **12 archivos publicados**.
 - Seguimiento histórico: **12,474 pronósticos observados**, cero pendientes.
 - Comparación de modelos: se seleccionó `baseline` porque el modelo ML no cumplió el criterio de pérdida de negocio.
+- Docker/Airflow: imagen construida, base inicializada, cuatro servicios activos y `airflow dags list-import-errors` vacío.
 
 ## Orden recomendado para finalizar
 
-1. Validar `dvc pull` desde un clon limpio.
-2. Habilitar Docker y ejecutar los DAGs, backfill y reprocesamiento.
-3. Guardar capturas o logs de Airflow junto con la evidencia ya versionada.
-4. Publicar los cuatro commits y el tag `entrega-lab1` en GitHub y confirmar la protección de `main`.
+1. Publicar los commits y el tag `entrega-lab1` en GitHub.
+2. Si se requiere evidencia visual, abrir `http://localhost:8080` y capturar la vista de los DAGs activos.

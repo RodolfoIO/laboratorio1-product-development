@@ -21,7 +21,7 @@ with DAG(
     dag_id="lab1_monitor_performance",
     schedule="@daily",
     start_date=datetime(2017, 7, 1, tz="UTC"),
-    catchup=True,
+    catchup=False,
     max_active_runs=1,
     tags=["lab1", "monitoring"],
 ) as dag:

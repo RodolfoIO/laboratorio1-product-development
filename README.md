@@ -153,7 +153,7 @@ docker compose up airflow-init
 docker compose up -d airflow-apiserver airflow-scheduler airflow-dag-processor airflow-triggerer
 ```
 
-La interfaz queda en <http://localhost:8080> con usuario `admin` y contraseña `admin` para una instalación local.
+La interfaz queda en <http://localhost:8080>. Airflow 3 usa el autenticador simple local y, por defecto, permite ingresar con usuario `admin` y contraseña `admin`.
 
 Los DAGs son:
 
@@ -162,13 +162,14 @@ Los DAGs son:
 - `lab1_forecast_and_order`: publica pronóstico y pedido semanal.
 - `lab1_monitor_performance`: compara pronósticos con ventas disponibles.
 
-Los DAGs tienen `catchup=True`, aceptan backfill y escriben resultados deterministas por fecha de corte. Las tareas esperan que la entrada esté montada en `/opt/project/store-sales-time-series-forecasting`.
+Los DAGs tienen `catchup=False` para evitar backfills masivos al iniciar el stack; aceptan backfill explícito y escriben resultados deterministas por fecha de corte. Las tareas esperan que la entrada esté montada en `/opt/project/store-sales-time-series-forecasting`.
 
 Para un backfill local, después de levantar Airflow se puede ejecutar:
 
 ```bash
-docker compose exec airflow-scheduler airflow dags backfill lab1_forecast_and_order \
-  --start-date 2017-07-24 --end-date 2017-07-31
+docker compose exec airflow-scheduler airflow backfill create \
+  --dag-id lab1_forecast_and_order \
+  --from-date 2017-07-24 --to-date 2017-07-31
 ```
 
 Una corrección se prueba modificando una copia de la fuente en la bandeja, ejecutando nuevamente `lab1_ingest_validate` y reprocesando el corte afectado. La carpeta original de Kaggle permanece de solo lectura.

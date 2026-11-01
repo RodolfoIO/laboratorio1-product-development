@@ -22,7 +22,7 @@ with DAG(
     dag_id="lab1_forecast_and_order",
     schedule="0 6 * * 1",
     start_date=datetime(2017, 7, 3, tz="UTC"),
-    catchup=True,
+    catchup=False,
     max_active_runs=1,
     tags=["lab1", "forecast", "order"],
 ) as dag:

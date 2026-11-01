@@ -18,7 +18,7 @@ with DAG(
     dag_id="lab1_ingest_validate",
     schedule="@daily",
     start_date=datetime(2017, 7, 1, tz="UTC"),
-    catchup=True,
+    catchup=False,
     max_active_runs=1,
     tags=["lab1", "ingesta", "validacion"],
 ) as dag:
@@ -28,4 +28,3 @@ with DAG(
         return stage_sources(INPUT_DIR, LANDING_DIR)
 
     ingest_and_validate()
-
