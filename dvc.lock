@@ -1,8 +1,9 @@
 schema: '2.0'
 stages:
   validate:
-    cmd: PYTHONPATH=src python -m inventory_forecasting.data.validate 
-      --input-dir store-sales-time-series-forecasting
+    cmd: PYTHONPATH=src python -m inventory_forecasting.data.validate
+      --input-dir store-sales-time-series-forecasting --landing-dir data/landing
+      --stage
     deps:
     - path: configs/sources.yaml
       hash: md5
@@ -16,23 +17,8 @@ stages:
       isexec: true
     - path: src/inventory_forecasting/data/landing.py
       hash: md5
-      md5: 44f5fa6f2d62d6ca046a3e07df0aa94f
-      size: 3595
-      isexec: true
-  prepare:
-    cmd: PYTHONPATH=src python -m inventory_forecasting.data.features
-      --input-dir store-sales-time-series-forecasting --cutoff 2017-07-31
-      --output data/processed/training_features.parquet
-    deps:
-    - path: params.yaml
-      hash: md5
-      md5: d81ca64e3da4c333dab243925280cd07
-      size: 650
-      isexec: true
-    - path: src/inventory_forecasting/data/features.py
-      hash: md5
-      md5: ce03255cf3aac84c81429ca242f63623
-      size: 8117
+      md5: c01bd5546ad75f793e55aa2ca4d51f26
+      size: 5941
       isexec: true
     - path: store-sales-time-series-forecasting/holidays_events.csv
       hash: md5
@@ -60,8 +46,261 @@ stages:
       size: 1552637
       isexec: true
     outs:
+    - path: data/landing/manifest.parquet
+      hash: md5
+      md5: 3cac03107a7a376a154b51944d48ab5e
+      size: 388274
+      isexec: true
+    - path: data/landing/manifest_history.parquet
+      hash: md5
+      md5: 3cac03107a7a376a154b51944d48ab5e
+      size: 388274
+      isexec: true
+    - path: data/landing/metadata.json
+      hash: md5
+      md5: 0177aba1c7f565ef715363249c201e8f
+      size: 2020
+      isexec: true
+  prepare:
+    cmd: PYTHONPATH=src python -m inventory_forecasting.data.features
+      --input-dir store-sales-time-series-forecasting --cutoff 2017-07-31
+      --output data/processed/training_features.parquet
+    deps:
+    - path: params.yaml
+      hash: md5
+      md5: 76f35e4cc48eb76ca2465079316cb9d7
+      size: 648
+      isexec: true
+    - path: src/inventory_forecasting/data/features.py
+      hash: md5
+      md5: aa12dc66d1bfbf5778e93643450f7729
+      size: 8119
+      isexec: true
+    - path: store-sales-time-series-forecasting/holidays_events.csv
+      hash: md5
+      md5: 6a71fe2fb783e8e6758a53d417b75872
+      size: 22309
+      isexec: true
+    - path: store-sales-time-series-forecasting/oil.csv
+      hash: md5
+      md5: 4767ef51a4ff57e65538afa9b1c5e1b5
+      size: 20580
+      isexec: true
+    - path: store-sales-time-series-forecasting/stores.csv
+      hash: md5
+      md5: 8414fbafbc7dcb33498d1a3c0cf2fda6
+      size: 1387
+      isexec: true
+    - path: store-sales-time-series-forecasting/train.csv
+      hash: md5
+      md5: b84434bf8eede5345ec04e41dfe9d86e
+      size: 121800373
+      isexec: true
+    - path: store-sales-time-series-forecasting/transactions.csv
+      hash: md5
+      md5: db5fa89caf46386aba0ed5bad7a403c7
+      size: 1552637
+      isexec: true
+    outs:
+    - path: data/processed/training_features.json
+      hash: md5
+      md5: 5a8c891b447ecc3a8d23734e8bb70a5e
+      size: 336
+      isexec: true
     - path: data/processed/training_features.parquet
       hash: md5
       md5: 2a5d0ffb4f59caad47afd13f310f609f
       size: 89782810
+      isexec: true
+  train:
+    cmd: PYTHONPATH=src python -m inventory_forecasting.models.train --input-dir
+      store-sales-time-series-forecasting --model-dir data/models
+    deps:
+    - path: configs/business.yaml
+      hash: md5
+      md5: c2a0ed03a4ca7c849fe2d1a55c29dfcf
+      size: 133
+      isexec: true
+    - path: params.yaml
+      hash: md5
+      md5: 76f35e4cc48eb76ca2465079316cb9d7
+      size: 648
+      isexec: true
+    - path: src/inventory_forecasting/models/baseline.py
+      hash: md5
+      md5: 2c7e286ff5bd0736a38fcdc35a007500
+      size: 1772
+      isexec: true
+    - path: src/inventory_forecasting/models/global_model.py
+      hash: md5
+      md5: 58ae33d939af96a4f237348ce2afc649
+      size: 2305
+      isexec: true
+    - path: src/inventory_forecasting/models/metrics.py
+      hash: md5
+      md5: 642e843a98a2a611c7c2a8cb2e2e293e
+      size: 2143
+      isexec: true
+    - path: src/inventory_forecasting/models/train.py
+      hash: md5
+      md5: 2aef686da919cebcaab2531c164870c4
+      size: 5170
+      isexec: true
+    - path: store-sales-time-series-forecasting/holidays_events.csv
+      hash: md5
+      md5: 6a71fe2fb783e8e6758a53d417b75872
+      size: 22309
+      isexec: true
+    - path: store-sales-time-series-forecasting/oil.csv
+      hash: md5
+      md5: 4767ef51a4ff57e65538afa9b1c5e1b5
+      size: 20580
+      isexec: true
+    - path: store-sales-time-series-forecasting/stores.csv
+      hash: md5
+      md5: 8414fbafbc7dcb33498d1a3c0cf2fda6
+      size: 1387
+      isexec: true
+    - path: store-sales-time-series-forecasting/train.csv
+      hash: md5
+      md5: b84434bf8eede5345ec04e41dfe9d86e
+      size: 121800373
+      isexec: true
+    - path: store-sales-time-series-forecasting/transactions.csv
+      hash: md5
+      md5: db5fa89caf46386aba0ed5bad7a403c7
+      size: 1552637
+      isexec: true
+    outs:
+    - path: data/models/current_model.json
+      hash: md5
+      md5: b238dd96baa223a9eea1c0de364a79f5
+      size: 168
+      isexec: true
+    - path: data/models/global_model.joblib
+      hash: md5
+      md5: c69333068c1a8da14f42a6d11ad2a737
+      size: 512321
+      isexec: true
+    - path: data/models/metrics.json
+      hash: md5
+      md5: 672e50ce8c68c38ebadb775dd6ec0cd1
+      size: 688
+      isexec: true
+    - path: data/models/model_comparison.csv
+      hash: md5
+      md5: 6881e79324d953773cac0fc074cdf83f
+      size: 307
+      isexec: true
+  forecast:
+    cmd: PYTHONPATH=src python -m inventory_forecasting.product.forecast
+      --input-dir store-sales-time-series-forecasting --cutoff 2017-07-31
+      --output-dir data/forecasts --model data/models/global_model.joblib
+    deps:
+    - path: configs/business.yaml
+      hash: md5
+      md5: c2a0ed03a4ca7c849fe2d1a55c29dfcf
+      size: 133
+      isexec: true
+    - path: data/models/global_model.joblib
+      hash: md5
+      md5: c69333068c1a8da14f42a6d11ad2a737
+      size: 512321
+      isexec: true
+    - path: params.yaml
+      hash: md5
+      md5: 76f35e4cc48eb76ca2465079316cb9d7
+      size: 648
+      isexec: true
+    - path: src/inventory_forecasting/product/forecast.py
+      hash: md5
+      md5: 931766628a85fac332059c88935cb0f5
+      size: 5183
+      isexec: true
+    - path: src/inventory_forecasting/product/order.py
+      hash: md5
+      md5: 5e3a082802fe88387a45e4daaa8e44c4
+      size: 2139
+      isexec: true
+    - path: store-sales-time-series-forecasting/holidays_events.csv
+      hash: md5
+      md5: 6a71fe2fb783e8e6758a53d417b75872
+      size: 22309
+      isexec: true
+    - path: store-sales-time-series-forecasting/oil.csv
+      hash: md5
+      md5: 4767ef51a4ff57e65538afa9b1c5e1b5
+      size: 20580
+      isexec: true
+    - path: store-sales-time-series-forecasting/stores.csv
+      hash: md5
+      md5: 8414fbafbc7dcb33498d1a3c0cf2fda6
+      size: 1387
+      isexec: true
+    - path: store-sales-time-series-forecasting/train.csv
+      hash: md5
+      md5: b84434bf8eede5345ec04e41dfe9d86e
+      size: 121800373
+      isexec: true
+    - path: store-sales-time-series-forecasting/transactions.csv
+      hash: md5
+      md5: db5fa89caf46386aba0ed5bad7a403c7
+      size: 1552637
+      isexec: true
+    outs:
+    - path: data/forecasts/forecast_2017-07-31.parquet
+      hash: md5
+      md5: 39f94bd4698411bea49a435d7375ea36
+      size: 69038
+      isexec: true
+    - path: data/forecasts/order_2017-07-31.parquet
+      hash: md5
+      md5: ee8ad50df44b6ebbf47639debb4c4937
+      size: 14578
+      isexec: true
+  monitor:
+    cmd: PYTHONPATH=src python -m inventory_forecasting.product.monitor
+      --input-dir store-sales-time-series-forecasting --forecast-dir
+      data/forecasts --reports-dir data/reports
+    deps:
+    - path: configs/business.yaml
+      hash: md5
+      md5: c2a0ed03a4ca7c849fe2d1a55c29dfcf
+      size: 133
+      isexec: true
+    - path: data/forecasts/forecast_2017-07-31.parquet
+      hash: md5
+      md5: 39f94bd4698411bea49a435d7375ea36
+      size: 69038
+      isexec: true
+    - path: src/inventory_forecasting/models/metrics.py
+      hash: md5
+      md5: 642e843a98a2a611c7c2a8cb2e2e293e
+      size: 2143
+      isexec: true
+    - path: src/inventory_forecasting/product/monitor.py
+      hash: md5
+      md5: 79e06eb648ac68817e44623320843713
+      size: 4398
+      isexec: true
+    - path: store-sales-time-series-forecasting/train.csv
+      hash: md5
+      md5: b84434bf8eede5345ec04e41dfe9d86e
+      size: 121800373
+      isexec: true
+    outs:
+    - path: data/reports/cost_sensitivity.json
+      hash: md5
+      md5: 4489e09934a7a2cb2cc96fca9fe7741d
+      size: 792
+      isexec: true
+    - path: data/reports/performance.json
+      hash: md5
+      md5: 423132347460368e62db4e2ab6063487
+      size: 3069
+      isexec: true
+    - path: data/reports/performance_detail.parquet
+      hash: md5
+      md5: 0199f8e9de0b3ddb9f18017a01ddd828
+      size: 108915
       isexec: true

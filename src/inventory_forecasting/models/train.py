@@ -54,7 +54,8 @@ def train_and_evaluate(
     validation_dates = pd.date_range(validation_start, max_date, freq="D")
     history = train[train["date"] <= fit_end]
     actual = train[train["date"] >= validation_start][["date", "store_nbr", "family", "sales"]].copy()
-    baseline = seasonal_naive_forecast(history, validation_dates)
+    baseline_history = history[history["date"] >= fit_end - pd.Timedelta(35, unit="D")]
+    baseline = seasonal_naive_forecast(baseline_history, validation_dates)
     ml = recursive_forecast(
         inputs,
         fit_end,

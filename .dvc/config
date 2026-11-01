@@ -1,0 +1,8 @@
+[core]
+    remote = s3
+['remote "gdrive"']
+    url = gdrive://1VXu0z-H47sAp1kOqy9qHGukvVUyWcr1t/lab1-dvc
+    gdrive_acknowledge_abuse = true
+['remote "s3"']
+    url = s3://lab1-product-development/lab1-dvc
+    region = us-east-2

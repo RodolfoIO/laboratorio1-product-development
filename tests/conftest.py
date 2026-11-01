@@ -20,8 +20,8 @@ def source_dir(tmp_path):
                         "date": date,
                         "store_nbr": store,
                         "family": family,
-                        "sales": float(10 + store + (date.dayofyear % 7)),
-                        "onpromotion": int(date.dayofyear % 3),
+                        "sales": float(10 + store + (date.day_of_year % 7)),
+                        "onpromotion": int(date.day_of_year % 3),
                     }
                 )
                 row_id += 1
@@ -39,4 +39,3 @@ def source_dir(tmp_path):
     transaction_rows = [{"date": date, "store_nbr": store, "transactions": 100} for date in dates for store in (1, 2)]
     pd.DataFrame(transaction_rows).to_csv(source_dir / "transactions.csv", index=False)
     return source_dir
-

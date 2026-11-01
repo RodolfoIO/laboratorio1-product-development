@@ -81,7 +81,7 @@ def _attach_known_metadata(
     frame["cluster"] = frame["cluster"].fillna(-1).astype(float)
     frame["type_code"] = frame["type_code"].fillna(-1).astype(float)
     frame["onpromotion"] = pd.to_numeric(frame["onpromotion"], errors="coerce").fillna(0.0)
-    frame["day_of_week"] = frame["date"].dt.dayofweek
+    frame["day_of_week"] = frame["date"].dt.day_of_week
     frame["day_of_month"] = frame["date"].dt.day
     frame["month"] = frame["date"].dt.month
     frame["week_of_year"] = frame["date"].dt.isocalendar().week.astype(int)

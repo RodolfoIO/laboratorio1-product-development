@@ -115,14 +115,14 @@ El hash obtenido debe coincidir con el hash registrado en la evidencia de entreg
 
 ## Entrenamiento y publicación
 
-El entrenamiento realiza una validación temporal sobre los últimos 28 días disponibles:
+El entrenamiento realiza una validación temporal sobre los últimos 7 días disponibles:
 
 ```bash
 PYTHONPATH=src python -m inventory_forecasting.models.train \
   --input-dir store-sales-time-series-forecasting
 ```
 
-Para mantener un tiempo de ejecución controlado, el modelo global usa una muestra determinista de hasta 500,000 filas, configurada en `params.yaml`; la validación conserva todas las series del periodo de evaluación.
+Para mantener un tiempo de ejecución controlado, el modelo global usa una muestra determinista de hasta 100,000 filas, configurada en `params.yaml`; la validación conserva todas las series del periodo de evaluación.
 
 El modelo solo reemplaza al baseline si reduce al menos 5% la pérdida de negocio y no empeora el WAPE en más de 2%. El resultado queda en `data/models/metrics.json` y la decisión en `data/models/current_model.json`.
 
