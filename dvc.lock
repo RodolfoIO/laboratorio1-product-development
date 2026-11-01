@@ -19,3 +19,49 @@ stages:
       md5: 44f5fa6f2d62d6ca046a3e07df0aa94f
       size: 3595
       isexec: true
+  prepare:
+    cmd: PYTHONPATH=src python -m inventory_forecasting.data.features
+      --input-dir store-sales-time-series-forecasting --cutoff 2017-07-31
+      --output data/processed/training_features.parquet
+    deps:
+    - path: params.yaml
+      hash: md5
+      md5: d81ca64e3da4c333dab243925280cd07
+      size: 650
+      isexec: true
+    - path: src/inventory_forecasting/data/features.py
+      hash: md5
+      md5: ce03255cf3aac84c81429ca242f63623
+      size: 8117
+      isexec: true
+    - path: store-sales-time-series-forecasting/holidays_events.csv
+      hash: md5
+      md5: 6a71fe2fb783e8e6758a53d417b75872
+      size: 22309
+      isexec: true
+    - path: store-sales-time-series-forecasting/oil.csv
+      hash: md5
+      md5: 4767ef51a4ff57e65538afa9b1c5e1b5
+      size: 20580
+      isexec: true
+    - path: store-sales-time-series-forecasting/stores.csv
+      hash: md5
+      md5: 8414fbafbc7dcb33498d1a3c0cf2fda6
+      size: 1387
+      isexec: true
+    - path: store-sales-time-series-forecasting/train.csv
+      hash: md5
+      md5: b84434bf8eede5345ec04e41dfe9d86e
+      size: 121800373
+      isexec: true
+    - path: store-sales-time-series-forecasting/transactions.csv
+      hash: md5
+      md5: db5fa89caf46386aba0ed5bad7a403c7
+      size: 1552637
+      isexec: true
+    outs:
+    - path: data/processed/training_features.parquet
+      hash: md5
+      md5: 2a5d0ffb4f59caad47afd13f310f609f
+      size: 89782810
+      isexec: true

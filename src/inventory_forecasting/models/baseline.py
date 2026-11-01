@@ -19,11 +19,8 @@ def seasonal_naive_forecast(
     history["date"] = pd.to_datetime(history["date"])
     history = history.sort_values(KEYS + ["date"])
     lookup = history.set_index(KEYS + ["date"])["sales"]
-    lagged = history[KEYS + ["date", "sales"]].copy()
-    lagged["date"] = lagged["date"] + pd.Timedelta(7, unit="D")
-    lagged = lagged.rename(columns={"sales": "lag7"})
-    residual_frame = history.merge(lagged, on=KEYS + ["date"], how="inner")
-    residuals = (residual_frame["sales"] - residual_frame["lag7"]).to_numpy()
+    lagged = history.groupby(KEYS, sort=False)["sales"].shift(7)
+    residuals = (history["sales"] - lagged).dropna().to_numpy()
     residuals = np.asarray(residuals if len(residuals) else [0.0])
     recent_means = history.groupby(KEYS)["sales"].apply(lambda values: float(values.tail(28).mean())).to_dict()
     pairs = history[KEYS].drop_duplicates()
